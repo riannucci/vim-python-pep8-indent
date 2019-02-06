@@ -213,6 +213,17 @@ function! s:indent_like_opening_paren(lnum)
             let res = base
         else
             let res = base + s:sw()
+            let extra_continuation = get(b:, 'python_pep8_extra_continuation',
+                        \ get(g:, 'python_pep8_extra_continuation', 0))
+            if extra_continuation
+              " If we need to do an extra continuation and we're the first level
+              " of parenthetical nesting, add an extra sw.
+              let [paren_lnum_2, paren_col_2] = s:find_opening_paren(
+                    \ paren_lnum, 1)
+              if paren_lnum_2 <= 0
+                let res += s:sw()
+              endif
+            endif
         endif
     else
         " Indent to match position of opening paren.

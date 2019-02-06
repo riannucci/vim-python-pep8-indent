@@ -106,6 +106,45 @@ With ``python_pep8_indent_hang_closing = 1``, closing brackets line up with the 
        )
 
 
+g:python_pep8_extra_continuation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This option adds the ability to indent the first level of parentetical
+expressions by an extra shiftwidth. This is helpful to visually distinguish
+block expressions (``if``/``else``/``def``/etc.) from e.g. function call
+expressions, or literal lists.
+
+By default (set to ``0``), these all have the same level of indentation::
+
+  def my_function(callback):
+      callback(
+          option=[
+              "this", "is", "a", "list"
+          ]
+      )
+
+With ``g:python_pep8_extra_continuation = 1``, the arguments to ``callback`` are
+indented an extra level (but inside the arguments they follow the usual
+indentation rules)::
+
+  def my_function(callback):
+      callback(
+            option=[
+                "this", "is", "a", "list"
+            ]
+      )
+
+This is especially compelling if you use python indentation level of 2::
+
+
+  def my_function(callback):
+    callback(
+        option=[
+          "this", "is", "a", "list"
+        ]
+    )
+
+
 Troubleshooting
 ---------------
 
