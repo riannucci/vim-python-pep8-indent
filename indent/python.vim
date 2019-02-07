@@ -192,6 +192,23 @@ function! s:match_expr_on_line(expr, lnum, start, ...)
     return r
 endfunction
 
+" Unicode-aware mechanism to get the unicode character spanning the byte offset
+" `cnum`. E.g. if `cnum('.')` gives you 10, you can call char_at(line, 9), and
+" this function will find the character containing byte offset 9 in the given
+" text.
+"
+" This looks up to 4 bytes back. If it fails to find a character, it returns an
+" empty string.
+function! s:char_at(text, cnum)
+    for i in range(4)
+        let retval = matchstr(a:text, '\%'.(a:cnum-i).'c.')
+        if strwidth(retval)
+            return retval
+        endif
+    endfor
+    return ""
+endfunction
+
 " Line up with open parenthesis/bracket/brace.
 function! s:indent_like_opening_paren(lnum)
     let [paren_lnum, paren_col] = s:find_opening_paren(a:lnum, 1)
@@ -213,15 +230,16 @@ function! s:indent_like_opening_paren(lnum)
             let res = base
         else
             let res = base + s:sw()
-            let extra_continuation = get(b:, 'python_pep8_extra_continuation',
-                        \ get(g:, 'python_pep8_extra_continuation', 0))
-            if extra_continuation
-              " If we need to do an extra continuation and we're the first level
-              " of parenthetical nesting, add an extra sw.
-              let [paren_lnum_2, paren_col_2] = s:find_opening_paren(
-                    \ paren_lnum, 1)
-              if paren_lnum_2 <= 0
-                let res += s:sw()
+            let func_continuation = get(b:, 'python_pep8_func_continuation',
+                        \ get(g:, 'python_pep8_func_continuation', 0))
+            if func_continuation
+              " Containing brace is a paren
+              if s:char_at(text, paren_col) == '('
+                " Char before paren is a printable non-punct/blank char.
+                let prev_ch = s:char_at(text, paren_col-1)
+                if prev_ch =~# '[[:print:]]' && prev_ch !~# '[[:punct:][:blank:]]'
+                  let res += s:sw()
+                endif
               endif
             endif
         endif
