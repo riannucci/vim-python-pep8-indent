@@ -106,18 +106,17 @@ With ``python_pep8_indent_hang_closing = 1``, closing brackets line up with the 
        )
 
 
-g:python_pep8_paren_continuation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+g:python_pep8_func_continuation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This option adds the ability to indent the first level of parentetical
-expressions by an extra shiftwidth. This is helpful to visually distinguish
-inline data definition expressions (``dict``/``list``/etc.) from function call
-expressions. The extra indentation will apply if:
+This option adds the ability to indent expressions within a function call by an
+extra shiftwidth. This is helpful to visually distinguish inline data definition
+expressions (``dict``/``list``/etc.) from function call expressions.
+The extra indentation will apply if (``|`` is the cursor location):
 
-* We are immediately inside a parenthetical expression (e.g. ``(expr)`` but not
-  ``([expr])``).
+* We are immediately inside a parenthetical expression (e.g. ``( some | expression )`` ).
 * The opening parenthesis is proceeded by an identifier character (e.g.
-  ``fn(expr)``, not ``var = (expr)``).
+  ``fn( some | expression )``, not ``var = ( some | expression )``).
 
 
 By default (set to ``0``), these all have the same level of indentation::
@@ -129,14 +128,17 @@ By default (set to ``0``), these all have the same level of indentation::
           ]
       )
 
-With ``g:python_pep8_paren_continuation = 1``, the arguments to ``callback`` are
+With ``g:python_pep8_func_continuation = 1``, the arguments to ``callback`` are
 indented an extra level (but inside the arguments they follow the usual
 indentation rules)::
 
   def my_function(callback):
       callback(
             option=[
-                "this", "is", "a", "list"
+                "this", "is", "a", "list",
+                func2(
+                    "also extra-indented"
+                )
             ]
       )
 
@@ -146,7 +148,10 @@ This is especially compelling if you use python indentation level of 2::
   def my_function(callback):
     callback(
         option=[
-          "this", "is", "a", "list"
+          "this", "is", "a", "list",
+          func2(
+              "also extra-indented"
+          )
         ]
     )
 
